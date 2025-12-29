@@ -12,30 +12,28 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('cart_items', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             $table->id();
 
             $table->foreignId('cart_id')
                 ->constrained()
                 ->cascadeOnDelete();
 
-            // Product & variation
             $table->foreignId('product_id')
                 ->constrained()
                 ->cascadeOnDelete();
 
             $table->foreignId('product_variation_id')
                 ->nullable()
-                ->constrained()
+                ->constrained('product_variations') // explicit
                 ->cascadeOnDelete();
 
-            // Snapshot price (VERY IMPORTANT)
             $table->decimal('price', 10, 2);
-
             $table->integer('quantity')->default(1);
 
             $table->timestamps();
 
-            // Prevent duplicate same item in cart
             $table->unique([
                 'cart_id',
                 'product_id',
